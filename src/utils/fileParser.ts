@@ -1,5 +1,33 @@
 import * as XLSX from 'xlsx';
+import * as pdfjsLib from 'pdf-parse';
+import * as mammoth from 'mammoth';
 import { MedicalCode, ParsedFile, FileType } from '../types';
+
+/**
+ * Parse PDF document
+ */
+const parsePDF = async (buffer: ArrayBuffer): Promise<ParsedFile> => {
+  const data = await pdfjsLib(buffer);
+  return {
+    headers: [],
+    data: [],
+    fileType: 'medical',
+    rawText: data.text
+  };
+};
+
+/**
+ * Parse DOCX document
+ */
+const parseDOCX = async (buffer: ArrayBuffer): Promise<ParsedFile> => {
+  const result = await mammoth.extractRawText({ arrayBuffer: buffer });
+  return {
+    headers: [],
+    data: [],
+    fileType: 'medical',
+    rawText: result.value
+  };
+};
 
 interface ColumnPattern {
   name: string;
@@ -197,14 +225,22 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
           throw new Error('Failed to read file');
         }
         
-        if (file.name.endsWith('.csv')) {
+        const fileExt = file.name.split('.').pop()?.toLowerCase();
+        
+        if (fileExt === 'csv') {
           const content = event.target.result as string;
           resolve(parseCSV(content));
-        } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+        } else if (['xlsx', 'xls'].includes(fileExt || '')) {
           const buffer = event.target.result as ArrayBuffer;
           resolve(parseXLSX(buffer));
+        } else if (fileExt === 'pdf') {
+          const buffer = event.target.result as ArrayBuffer;
+          resolve(await parsePDF(buffer));
+        } else if (fileExt === 'docx') {
+          const buffer = event.target.result as ArrayBuffer;
+          resolve(await parseDOCX(buffer));
         } else {
-          reject(new Error('Unsupported file format. Please upload CSV or XLSX files.'));
+          reject(new Error('Unsupported file format. Please upload CSV, XLSX, PDF, or DOCX files.'));
         }
       } catch (error) {
         reject(error);
@@ -215,7 +251,8 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
       reject(new Error('Error reading file'));
     };
     
-    if (file.name.endsWith('.csv')) {
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+    if (fileExt === 'csv') {
       reader.readAsText(file);
     } else {
       reader.readAsArrayBuffer(file);

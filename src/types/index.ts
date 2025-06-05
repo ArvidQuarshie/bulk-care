@@ -54,10 +54,28 @@ export interface ValidationResult {
 
 export type FileType = 'medical' | 'drug' | 'policy' | 'clinician' | 'provider' | 'intermediary';
 
+export interface DocumentValidationFlow {
+  name: 'claims' | 'policy_member' | 'billing' | 'provider_details' | 'user_uploads' | 'medical_codes';
+  description: string;
+  requiredFields: string[];
+}
+
+export interface DocumentValidationResult {
+  flow: string;
+  summary: string;
+  validations: {
+    field: string;
+    status: '✅ Valid' | '⚠️ Warning' | '❌ Invalid';
+    reason?: string;
+  }[];
+  recommendations: string[];
+}
+
 export interface ParsedFile {
   headers: string[];
-  data: (MedicalCode | DrugCode)[];
+  data: (MedicalCode | DrugCode | Record<string, any>)[];
   fileType: FileType;
+  rawText?: string;
 }
 
 export interface ValidationSummary {
