@@ -52,9 +52,12 @@ export interface ValidationResult {
   duplicateOf?: string;
 }
 
+export type FileType = 'medical' | 'drug' | 'policy';
+
 export interface ParsedFile {
   headers: string[];
   data: (MedicalCode | DrugCode)[];
+  fileType: FileType;
 }
 
 export interface ValidationSummary {

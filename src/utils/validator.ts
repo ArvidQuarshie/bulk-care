@@ -1,13 +1,23 @@
-import { MedicalCode, DrugCode, ValidationResult } from '../types';
+import { MedicalCode, DrugCode, ValidationResult, FileType } from '../types';
 import { validateWithAI } from '../services/openaiService';
 import { transformMedicalCode, transformDrugCode, transformPolicyData } from './transformer';
 
-const findDuplicates = (entries: (MedicalCode | DrugCode)[]): Map<string, string[]> => {
+const findDuplicates = (entries: (MedicalCode | DrugCode)[], fileType: FileType): Map<string, string[]> => {
   const duplicates = new Map<string, string[]>();
   const seen = new Map<string, string>();
 
   entries.forEach((entry) => {
-    const key = 'drug_code' in entry ? entry.drug_code : entry.medical_code;
+    let key: string;
+    switch (fileType) {
+      case 'drug':
+        key = (entry as DrugCode).drug_code;
+        break;
+      case 'policy':
+        key = (entry as any).policy_id;
+        break;
+      default:
+        key = (entry as MedicalCode).medical_code;
+    }
     
     if (seen.has(key)) {
       const originalId = seen.get(key)!;
@@ -24,13 +34,13 @@ const findDuplicates = (entries: (MedicalCode | DrugCode)[]): Map<string, string
   return duplicates;
 };
 
-export const validateEntries = async (entries: (MedicalCode | DrugCode)[]): Promise<ValidationResult[]> => {
-  const duplicatesMap = findDuplicates(entries);
+export const validateEntries = async (entries: (MedicalCode | DrugCode)[], fileType: FileType): Promise<ValidationResult[]> => {
+  const duplicatesMap = findDuplicates(entries, fileType);
   
   const transformedEntries = entries.map(entry => {
-    if ('drug_code' in entry) {
+    if (fileType === 'drug') {
       return transformDrugCode(entry);
-    } else if ('policy_id' in entry) {
+    } else if (fileType === 'policy') {
       return transformPolicyData(entry as any);
     } else {
       return transformMedicalCode(entry);
@@ -38,7 +48,17 @@ export const validateEntries = async (entries: (MedicalCode | DrugCode)[]): Prom
   });
   
   const results = await Promise.all(transformedEntries.map(async (entry) => {
-    const code = 'drug_code' in entry ? entry.drug_code : entry.medical_code;
+    let code: string;
+    switch (fileType) {
+      case 'drug':
+        code = (entry as DrugCode).drug_code;
+        break;
+      case 'policy':
+        code = (entry as any).policy_id;
+        break;
+      default:
+        code = (entry as MedicalCode).medical_code;
+    }
     const system = entry.coding_system || '';
     let duplicateOf: string | undefined;
     

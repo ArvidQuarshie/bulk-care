@@ -1,59 +1,67 @@
 import * as XLSX from 'xlsx';
-import { MedicalCode, ParsedFile } from '../types';
+import { MedicalCode, ParsedFile, FileType } from '../types';
+
+interface ColumnPattern {
+  name: string;
+  patterns: RegExp[];
+  required?: boolean;
+}
+
+const filePatterns: Record<FileType, ColumnPattern[]> = {
+  medical: [
+    { name: 'medical_code', patterns: [/code/i, /medical.*code/i], required: true },
+    { name: 'description', patterns: [/desc/i, /description/i] },
+    { name: 'coding_system', patterns: [/system/i, /coding.*system/i] }
+  ],
+  drug: [
+    { name: 'drug_code', patterns: [/drug.*code/i], required: true },
+    { name: 'drug_name', patterns: [/drug.*name/i], required: true },
+    { name: 'strength', patterns: [/strength/i] },
+    { name: 'atc_code', patterns: [/atc/i] }
+  ],
+  policy: [
+    { name: 'policy_id', patterns: [/policy.*id/i], required: true },
+    { name: 'policy_name', patterns: [/policy.*name/i], required: true },
+    { name: 'payer_id', patterns: [/payer.*id/i] },
+    { name: 'coverage_limit', patterns: [/coverage.*limit/i, /limit/i] }
+  ]
+};
 
 /**
  * Normalize column headers to standardized format
  */
-const normalizeHeader = (header: string): string => {
-  const headerMap: Record<string, string> = {
-    // Medical code mappings
-    'medical code': 'medical_code',
-    'code': 'medical_code',
-    'description': 'description',
-    'desc': 'description',
-    'coding system': 'coding_system',
-    'system': 'coding_system',
-    'tag': 'tag',
-    'category': 'tag',
-    'coverage': 'coverage',
-    'covered': 'coverage',
-    
-    // Policy mappings
-    'policy id': 'policy_id',
-    'policy name': 'policy_name',
-    'payer id': 'payer_id',
-    'policy type': 'policy_type',
-    'start date': 'start_date',
-    'end date': 'end_date',
-    'coverage limit': 'coverage_limit',
-    
-    // Drug code mappings
-    'drug code': 'drug_code',
-    'drug name': 'drug_name',
-    'drug type': 'drug_type',
-    'package size': 'package_size',
-    'uom': 'uom',
-    'unit of measure': 'uom',
-    'branded / generic': 'branded_generic',
-    'chronic indicator': 'chronic_indicator',
-    'atc code': 'atc_code',
-    'ucr benchmark': 'ucr_benchmark',
-    'valid from': 'valid_from',
-    'valid to': 'valid_to'
-  };
+const normalizeHeader = (header: string, fileType: FileType): string => {
+  const patterns = filePatterns[fileType];
+  const normalizedHeader = header.toLowerCase().trim();
 
-  const normalized = header.toLowerCase().trim();
-  return headerMap[normalized] || normalized;
-}
+  for (const pattern of patterns) {
+    if (pattern.patterns.some(p => p.test(normalizedHeader))) {
+      return pattern.name;
+    }
+  }
 
-const isDrugList = (headers: string[]): boolean => {
-  const drugSpecificFields = ['drug_code', 'drug_name', 'strength', 'atc_code'];
-  return drugSpecificFields.some(field => headers.includes(field));
+  return normalizedHeader;
 };
 
-const isPolicyList = (headers: string[]): boolean => {
-  const policySpecificFields = ['policy_id', 'payer_id', 'policy_type'];
-  return policySpecificFields.some(field => headers.includes(field));
+/**
+ * Detect file type based on headers
+ */
+const detectFileType = (headers: string[]): FileType => {
+  const headerSet = new Set(headers.map(h => h.toLowerCase().trim()));
+  
+  for (const [type, patterns] of Object.entries(filePatterns)) {
+    const requiredPatterns = patterns.filter(p => p.required);
+    if (requiredPatterns.every(pattern => 
+      pattern.patterns.some(p => 
+        Array.from(headerSet).some(h => p.test(h))
+      )
+    )) {
+      return type as FileType;
+    }
+  }
+  
+  // Default to medical if no specific type is detected
+  return 'medical';
 };
 
 /**
@@ -61,9 +69,11 @@ const isPolicyList = (headers: string[]): boolean => {
  */
 const parseCSV = (content: string): ParsedFile => {
   const rows = content.split('\n');
-  const headers = rows[0].split(',').map(h => normalizeHeader(h.trim()));
+  const rawHeaders = rows[0].split(',').map(h => h.trim());
+  const fileType = detectFileType(rawHeaders);
+  const headers = rawHeaders.map(h => normalizeHeader(h, fileType));
   
-  const fileType = isDrugList(headers) ? 'drug' : isPolicyList(headers) ? 'policy' : 'medical';
+  console.log(`Detected file type: ${fileType}`);
   
   const data = rows.slice(1)
     .filter(row => row.trim())
@@ -76,11 +86,13 @@ const parseCSV = (content: string): ParsedFile => {
         : { medical_code: '' };
       
       headers.forEach((header, index) => {
-        let value = values[index] || null;
+        let value = values[index]?.trim() || null;
         
         // Convert numeric fields
-        if (['price', 'ucr_benchmark', 'coverage_limit'].includes(header) && value) {
+        if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength'].includes(header)) {
           value = parseFloat(value);
+        } else if (value && ['start_date', 'end_date', 'valid_from', 'valid_to'].includes(header)) {
+          value = new Date(value).toISOString();
         }
         
         entry[header] = value;
@@ -89,7 +101,7 @@ const parseCSV = (content: string): ParsedFile => {
       return entry;
     });
   
-  return { headers, data };
+  return { headers, data, fileType };
 };
 
 /**
@@ -102,8 +114,8 @@ const parseXLSX = (buffer: ArrayBuffer): ParsedFile => {
   
   const rawData = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet);
   const originalHeaders = Object.keys(rawData[0] || {});
-  const headers = originalHeaders.map(h => normalizeHeader(h));
-  const fileType = isDrugList(headers) ? 'drug' : isPolicyList(headers) ? 'policy' : 'medical';
+  const fileType = detectFileType(originalHeaders);
+  const headers = originalHeaders.map(h => normalizeHeader(h, fileType));
   
   const data = rawData.map(row => {
     const entry: any = fileType === 'drug' 
@@ -117,8 +129,10 @@ const parseXLSX = (buffer: ArrayBuffer): ParsedFile => {
       let value = row[header] || null;
       
       // Convert numeric fields
-      if (['price', 'ucr_benchmark', 'coverage_limit'].includes(normalizedHeader) && value) {
+      if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength'].includes(normalizedHeader)) {
         value = parseFloat(value);
+      } else if (value && ['start_date', 'end_date', 'valid_from', 'valid_to'].includes(normalizedHeader)) {
+        value = new Date(value).toISOString();
       }
       
       entry[normalizedHeader] = value;
@@ -127,7 +141,7 @@ const parseXLSX = (buffer: ArrayBuffer): ParsedFile => {
     return entry;
   });
   
-  return { headers, data };
+  return { headers, data, fileType };
 };
 
 /**

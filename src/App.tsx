@@ -26,7 +26,7 @@ function App() {
       
       for (const file of files) {
         const { data } = await parseFile(file);
-        const validationResults = await validateEntries(data);
+        const validationResults = await validateEntries(data, data.fileType);
         allResults.push(...validationResults);
       }
       
