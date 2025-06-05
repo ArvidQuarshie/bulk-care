@@ -108,40 +108,42 @@ export async function validateWithAI(entry: MedicalCode | DrugCode | PolicyData)
       originalData: entry
     };
   } catch (error) {
-    console.error('OpenAI validation error:', error);
+    console.error('OpenAI API error:', error);
 
-    let errorMessage = 'An unexpected error occurred during validation.';
-    let issues = ['AI validation failed'];
+    // Handle critical API errors by throwing them
     
     if (error instanceof OpenAI.APIError) {
       if (error.status === 429) {
-        errorMessage = 'Rate limit reached. Please try again in a few moments.';
-        issues = ['Rate limit exceeded - please wait before trying again'];
+        throw new Error(
+          'OpenAI rate limit reached. Please wait a few moments before trying again. ' +
+          (error.message || '')
+        );
       } else if (error.status === 401) {
-        errorMessage = 'API authentication failed. Please check your API key configuration.';
-        issues = ['API authentication error'];
+        throw new Error(
+          'OpenAI API authentication failed. Please check your API key configuration.'
+        );
       } else {
-        errorMessage = `OpenAI API error: ${error.message}`;
-        issues = [`API error: ${error.message}`];
+        throw new Error(`OpenAI API error: ${error.message}`);
       }
     } else if (error instanceof OpenAI.APIConnectionError) {
-      errorMessage = 'Unable to connect to OpenAI. Please check your internet connection.';
-      issues = ['Connection error - please check your internet connection'];
+      throw new Error(
+        'Unable to connect to OpenAI API. Please check your internet connection.'
+      );
     } else if (error instanceof OpenAI.APITimeoutError) {
-      errorMessage = 'The request to OpenAI timed out. Please try again.';
-      issues = ['Request timeout - please try again'];
-    }
+      throw new Error('OpenAI API request timed out. Please try again.');
+    } 
 
-    // Fix the code property assignment in the error case
+    // For non-critical errors, return a validation result with error details
     const code = isDrug ? entry.drug_code : isPolicy ? entry.policy_id : entry.medical_code || '';
-
+    
     return {
       code,
       status: 'invalid',
       coding_system: entry.coding_system || null,
-      issues,
+      issues: ['Validation failed due to an unexpected error'],
       recommendations: ['Try validating again or check the code manually'],
-      explanation: errorMessage,
+      explanation: error instanceof Error ? error.message : 'An unexpected error occurred',
+      compliance_notes: [],
       originalData: entry
     };
   }
