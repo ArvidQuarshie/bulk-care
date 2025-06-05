@@ -7,17 +7,21 @@ const findDuplicates = (entries: (MedicalCode | DrugCode)[], fileType: FileType)
   const seen = new Map<string, string>();
 
   entries.forEach((entry) => {
-    let key: string;
+    if (!entry) return; // Skip undefined entries
+    
+    let key = '';
     switch (fileType) {
       case 'drug':
-        key = (entry as DrugCode).drug_code;
+        key = (entry as DrugCode).drug_code || '';
         break;
       case 'policy':
-        key = (entry as any).policy_id;
+        key = (entry as any).policy_id || '';
         break;
       default:
-        key = (entry as MedicalCode).medical_code;
+        key = (entry as MedicalCode).medical_code || '';
     }
+    
+    if (!key) return; // Skip entries without a key
     
     if (seen.has(key)) {
       const originalId = seen.get(key)!;
@@ -48,18 +52,23 @@ export const validateEntries = async (entries: (MedicalCode | DrugCode)[], fileT
   });
   
   const results = await Promise.all(transformedEntries.map(async (entry) => {
-    let code: string;
+    if (!entry) return null;
+    
+    let code = '';
     switch (fileType) {
       case 'drug':
-        code = (entry as DrugCode).drug_code;
+        code = (entry as DrugCode).drug_code || '';
         break;
       case 'policy':
-        code = (entry as any).policy_id;
+        code = (entry as any).policy_id || '';
         break;
       default:
-        code = (entry as MedicalCode).medical_code;
+        code = (entry as MedicalCode).medical_code || '';
     }
-    const system = entry.coding_system || '';
+    
+    if (!code) return null;
+    
+    const system = (entry.coding_system || '').toString();
     let duplicateOf: string | undefined;
     
     // Check if this entry is a duplicate
@@ -76,7 +85,7 @@ export const validateEntries = async (entries: (MedicalCode | DrugCode)[], fileT
       duplicateOf,
       status: duplicateOf ? 'warning' : result.status
     };
-  }));
+  })).then(results => results.filter(Boolean) as ValidationResult[]);
 
   return results;
 };
