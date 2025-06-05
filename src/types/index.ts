@@ -52,7 +52,7 @@ export interface ValidationResult {
   duplicateOf?: string;
 }
 
-export type FileType = 'medical' | 'drug' | 'policy';
+export type FileType = 'medical' | 'drug' | 'policy' | 'clinician' | 'provider' | 'intermediary';
 
 export interface ParsedFile {
   headers: string[];

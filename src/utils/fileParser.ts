@@ -24,6 +24,24 @@ const filePatterns: Record<FileType, ColumnPattern[]> = {
     { name: 'policy_name', patterns: [/policy.*name/i], required: true },
     { name: 'payer_id', patterns: [/payer.*id/i] },
     { name: 'coverage_limit', patterns: [/coverage.*limit/i, /limit/i] }
+  ],
+  clinician: [
+    { name: 'clinician_id', patterns: [/clinician.*id/i, /doctor.*id/i], required: true },
+    { name: 'name', patterns: [/name/i, /doctor.*name/i], required: true },
+    { name: 'specialization', patterns: [/special/i, /expertise/i] },
+    { name: 'license_number', patterns: [/license/i, /registration/i] }
+  ],
+  provider: [
+    { name: 'provider_id', patterns: [/provider.*id/i, /facility.*id/i], required: true },
+    { name: 'provider_name', patterns: [/provider.*name/i, /facility.*name/i], required: true },
+    { name: 'provider_type', patterns: [/type/i, /category/i] },
+    { name: 'location', patterns: [/location/i, /address/i] }
+  ],
+  intermediary: [
+    { name: 'intermediary_id', patterns: [/intermediary.*id/i, /broker.*id/i], required: true },
+    { name: 'intermediary_name', patterns: [/intermediary.*name/i, /broker.*name/i], required: true },
+    { name: 'commission_rate', patterns: [/commission/i, /rate/i] },
+    { name: 'license_number', patterns: [/license/i, /registration/i] }
   ]
 };
 
@@ -50,12 +68,16 @@ const detectFileType = (headers: string[]): FileType => {
   const headerSet = new Set(headers.map(h => h.toLowerCase().trim()));
   
   for (const [type, patterns] of Object.entries(filePatterns)) {
+    // Count matching required patterns
     const requiredPatterns = patterns.filter(p => p.required);
-    if (requiredPatterns.every(pattern => 
+    const matchCount = requiredPatterns.filter(pattern => 
       pattern.patterns.some(p => 
         Array.from(headerSet).some(h => p.test(h))
       )
-    )) {
+    ).length;
+    
+    // If all required patterns match, return this type
+    if (matchCount === requiredPatterns.length) {
       return type as FileType;
     }
   }
@@ -73,17 +95,35 @@ const parseCSV = (content: string): ParsedFile => {
   const fileType = detectFileType(rawHeaders);
   const headers = rawHeaders.map(h => normalizeHeader(h, fileType));
   
-  console.log(`Detected file type: ${fileType}`);
+  // Log file type detection
+  console.log(`Detected file type: ${fileType.charAt(0).toUpperCase() + fileType.slice(1)}`);
   
   const data = rows.slice(1)
     .filter(row => row.trim())
     .map(row => {
       const values = row.split(',').map(v => v.trim());
-      const entry: any = fileType === 'drug' 
-        ? { drug_code: '' } 
-        : fileType === 'policy'
-        ? { policy_id: '' }
-        : { medical_code: '' };
+      const entry: any = {};
+      
+      // Initialize ID field based on file type
+      switch (fileType) {
+        case 'drug':
+          entry.drug_code = '';
+          break;
+        case 'policy':
+          entry.policy_id = '';
+          break;
+        case 'clinician':
+          entry.clinician_id = '';
+          break;
+        case 'provider':
+          entry.provider_id = '';
+          break;
+        case 'intermediary':
+          entry.intermediary_id = '';
+          break;
+        default:
+          entry.medical_code = '';
+      }
       
       headers.forEach((header, index) => {
         let value = values[index]?.trim() || null;
