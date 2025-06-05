@@ -46,11 +46,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
     const validFiles = files.filter(file => 
       file.name.endsWith('.csv') || 
       file.name.endsWith('.xlsx') || 
-      file.name.endsWith('.xls')
+      file.name.endsWith('.xls') ||
+      file.name.endsWith('.pdf') ||
+      file.name.endsWith('.docx')
     );
 
     if (validFiles.length !== files.length) {
-      alert('Some files were skipped. Only CSV and Excel files are supported.');
+      alert('Some files were skipped. Only CSV, Excel, PDF, and Word files are supported.');
     }
 
     if (validFiles.length > 0) {
@@ -81,7 +83,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
           type="file"
           className="hidden"
           multiple
-          accept=".csv,.xlsx,.xls"
+          accept=".csv,.xlsx,.xls,.pdf,.docx"
           onChange={handleChange}
           disabled={isLoading}
         />
@@ -112,7 +114,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
             <p className="mb-2 text-sm font-medium text-gray-700">
               <span className="font-semibold">Click to upload</span> or drag and drop multiple files
             </p>
-            <p className="text-xs text-gray-500">CSV or Excel files only</p>
+            <p className="text-xs text-gray-500">CSV, Excel, PDF, or Word files</p>
             <button
               type="button"
               className="material-button-primary mt-4"
