@@ -104,6 +104,7 @@ function App() {
         {results.length > 0 && (
           <ValidationResults
             results={results}
+            rawText={results[0]?.originalData?.rawText}
             onExport={handleExport}
           />
         )}

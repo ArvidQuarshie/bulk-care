@@ -3,18 +3,29 @@ import { ValidationResult, ValidationSummary as ValidationSummaryType } from '..
 import ValidationItem from './ValidationItem';
 import ValidationSummary from './ValidationSummary';
 import { sendValidationResults } from '../services/slackService';
+import { validateDocument } from '../utils/documentValidator';
 import { MessageSquare } from 'lucide-react';
 
 interface ValidationResultsProps {
   results: ValidationResult[];
   onExport: () => void;
+  rawText?: string;
 }
 
-const ValidationResults: React.FC<ValidationResultsProps> = ({ results, onExport }) => {
+const ValidationResults: React.FC<ValidationResultsProps> = ({ results, onExport, rawText }) => {
   const [slackChannel, setSlackChannel] = useState('');
   const [isSlackModalOpen, setIsSlackModalOpen] = useState(false);
   const [slackError, setSlackError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
+  const [documentResults, setDocumentResults] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (rawText) {
+      validateDocument(rawText, ['claims', 'medical_codes'])
+        .then(setDocumentResults)
+        .catch(console.error);
+    }
+  }, [rawText]);
 
   if (results.length === 0) {
     return null;
