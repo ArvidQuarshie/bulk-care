@@ -50,19 +50,27 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <FileSearch className="h-8 w-8 text-green-600 mr-3" />
-            <h1 className="text-2xl font-bold text-gray-800">
-              Bulk-Care
-            </h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Bulk-Care
+              </h1>
             </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="flex -mb-px">
+            <button
+              className="tab-button tab-button-active"
+            >
+              <FileSearch className="w-4 h-4 mr-2 inline-block" />
+              File Inspector
+            </button>
+          </nav>
+        </div>
+
         <section className="material-card p-8 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            File Inspector
-          </h2>
           <div className="text-gray-600 mb-6 space-y-2">
             <p>
               Upload one or more files for intelligent inspection and validation. The system analyzes
