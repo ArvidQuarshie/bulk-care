@@ -1,0 +1,11 @@
+Policy ID,Policy Name,Payer ID,Policy Type,Start Date,End Date,Currency,Coverage Limit,Status,Description
+POL001,Health Basic,PAY001,Individual,2025-01-01,2025-12-31,KES,50000,Active,Basic outpatient coverage
+POL002,Health Plus,PAY002,Family,2025-02-01,2026-01-31,KES,150000,Active,Inpatient + outpatient + maternity
+POL003,Chronic Care Plan,PAY003,Individual,2025-03-01,2026-02-28,KES,80000,Pending,Covers chronic illness support
+POL004,Senior Cover,PAY004,Individual,2025-01-15,2025-12-14,KES,60000,Active,For individuals aged 60+
+POL005,Corporate Bronze,PAY005,Corporate,2025-04-01,2026-03-31,KES,250000,Active,Entry-level corporate plan
+POL006,Corporate Gold,PAY005,Corporate,2025-04-01,2026-03-31,KES,750000,Active,Full cover corporate benefits
+POL007,Maternal Plan,PAY006,Family,2025-05-01,2026-04-30,KES,120000,Active,Focused on maternity and newborn care
+POL008,Children's Cover,PAY007,Child,2025-06-01,2026-05-31,KES,30000,Active,Covers common pediatric services
+POL009,Travel Health,PAY008,Individual,2025-07-01,2025-12-31,USD,1000,Active,Emergency care during travel
+POL010,Executive Cover,PAY009,Individual,2025-01-01,2025-12-31,KES,1000000,Active,All-inclusive executive coverage
