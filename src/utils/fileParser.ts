@@ -219,7 +219,7 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         if (!event.target?.result) {
           throw new Error('Failed to read file');
@@ -237,7 +237,7 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
           const buffer = event.target.result as ArrayBuffer;
           resolve(await parsePDF(buffer));
         } else if (fileExt === 'docx') {
-          const buffer = event.target.result as ArrayBuffer;
+          const buffer = event.target.result as ArrayBuffer; 
           resolve(await parseDOCX(buffer));
         } else {
           reject(new Error('Unsupported file format. Please upload CSV, XLSX, PDF, or DOCX files.'));
