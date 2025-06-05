@@ -1,20 +1,6 @@
 import * as XLSX from 'xlsx';
-import * as pdfjsLib from 'pdf-parse';
 import * as mammoth from 'mammoth';
 import { MedicalCode, ParsedFile, FileType } from '../types';
-
-/**
- * Parse PDF document
- */
-const parsePDF = async (buffer: ArrayBuffer): Promise<ParsedFile> => {
-  const data = await pdfjsLib(buffer);
-  return {
-    headers: [],
-    data: [],
-    fileType: 'medical',
-    rawText: data.text
-  };
-};
 
 /**
  * Parse DOCX document
@@ -233,9 +219,6 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
         } else if (['xlsx', 'xls'].includes(fileExt || '')) {
           const buffer = event.target.result as ArrayBuffer;
           resolve(parseXLSX(buffer));
-        } else if (fileExt === 'pdf') {
-          const buffer = event.target.result as ArrayBuffer;
-          resolve(await parsePDF(buffer));
         } else if (fileExt === 'docx') {
           const buffer = event.target.result as ArrayBuffer; 
           resolve(await parseDOCX(buffer));

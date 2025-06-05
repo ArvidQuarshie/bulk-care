@@ -47,7 +47,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
       file.name.endsWith('.csv') || 
       file.name.endsWith('.xlsx') || 
       file.name.endsWith('.xls') ||
-      file.name.endsWith('.pdf') ||
       file.name.endsWith('.docx')
     );
 
@@ -83,7 +82,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
           type="file"
           className="hidden"
           multiple
-          accept=".csv,.xlsx,.xls,.pdf,.docx"
+          accept=".csv,.xlsx,.xls,.docx"
           onChange={handleChange}
           disabled={isLoading}
         />
@@ -114,7 +113,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect, isLoading }) 
             <p className="mb-2 text-sm font-medium text-gray-700">
               <span className="font-semibold">Click to upload</span> or drag and drop multiple files
             </p>
-            <p className="text-xs text-gray-500">CSV, Excel, PDF, or Word files</p>
+            <p className="text-xs text-gray-500">CSV, Excel, or Word files</p>
             <button
               type="button"
               className="material-button-primary mt-4"
