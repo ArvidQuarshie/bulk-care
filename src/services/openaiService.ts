@@ -44,16 +44,33 @@ const openai = new OpenAI({
 });
 
 export async function validateWithAI(entry: MedicalCode | DrugCode | PolicyData): Promise<ValidationResult> {
-  // Get the code for the validation result
-  const isDrug = 'drug_code' in entry;
-  const isPolicy = 'policy_id' in entry;
-  const code = isDrug ? entry.drug_code : isPolicy ? entry.policy_id : entry.medical_code || '';
-  
+  // This function is kept for backward compatibility but now calls batch validation
+  const results = await validateBatchWithAI([entry]);
+  return results[0];
+}
+
+export async function validateBatchWithAI(entries: (MedicalCode | DrugCode | PolicyData)[]): Promise<ValidationResult[]> {
+  if (entries.length === 0) return [];
+
+  // Determine the type of entries
+  const firstEntry = entries[0];
+  const isDrug = 'drug_code' in firstEntry;
+  const isPolicy = 'policy_id' in firstEntry;
+
+  const entriesData = entries.map((entry, index) => ({
+    index,
+    data: entry
+  }));
+
   const prompt = `
-    Analyze this ${isDrug ? 'drug' : isPolicy ? 'policy' : 'medical code'} entry and provide validation results:
-    ${JSON.stringify(entry, null, 2)}
+    Analyze these ${entries.length} ${isDrug ? 'drug' : isPolicy ? 'policy' : 'medical code'} entries and provide validation results for each:
     
-    Consider:
+    ${entriesData.map(({ index, data }) => `
+    Entry ${index}:
+    ${JSON.stringify(data, null, 2)}
+    `).join('\n')}
+    
+    For each entry, consider:
     ${isDrug ? `
     1. Is the drug code format valid?
     2. Are strength and unit specifications correct?
@@ -74,16 +91,21 @@ export async function validateWithAI(entry: MedicalCode | DrugCode | PolicyData)
     3. Are there any potential billing or compliance issues?
     4. What recommendations would improve this entry?
     `}
-    Provide a helpful explanation in natural language.
     
-    Return only a JSON object with these fields:
+    Return only a JSON object with a "results" array containing validation results for each entry in order:
     {
-      "status": "valid" | "warning" | "invalid",
-      "issues": string[],
-      "recommendations": string[],
-      "explanation": string,
-      "compliance_notes": string[],
-      "duplicateOf": string | null
+      "results": [
+        {
+          "index": 0,
+          "status": "valid" | "warning" | "invalid",
+          "issues": string[],
+          "recommendations": string[],
+          "explanation": string,
+          "compliance_notes": string[],
+          "duplicateOf": string | null
+        },
+        // ... more results for each entry
+      ]
     }
   `;
 
@@ -110,104 +132,133 @@ export async function validateWithAI(entry: MedicalCode | DrugCode | PolicyData)
     const error = result.error!;
     console.error('OpenAI API error:', error);
 
-    // Handle different types of errors and return appropriate ValidationResult
-    if (error instanceof OpenAI.APIError) {
-      if (error.status === 429) {
+    // Return error results for all entries
+    return entries.map((entry) => {
+      const code = isDrug ? (entry as any).drug_code : isPolicy ? (entry as any).policy_id : (entry as any).medical_code || '';
+      
+      if (error instanceof OpenAI.APIError) {
+        if (error.status === 429) {
+          return {
+            code,
+            status: 'invalid' as const,
+            coding_system: (entry as any).coding_system || null,
+            issues: ['OpenAI rate limit reached'],
+            recommendations: ['Please wait a few moments before trying again'],
+            explanation: 'OpenAI rate limit reached. Please wait a few moments before trying again.',
+            compliance_notes: [],
+            originalData: entry
+          };
+        } else if (error.status === 401) {
+          return {
+            code,
+            status: 'invalid' as const,
+            coding_system: (entry as any).coding_system || null,
+            issues: ['OpenAI API authentication failed'],
+            recommendations: ['Please check your API key configuration'],
+            explanation: 'OpenAI API authentication failed. Please check your API key configuration.',
+            compliance_notes: [],
+            originalData: entry
+          };
+        } else {
+          return {
+            code,
+            status: 'invalid' as const,
+            coding_system: (entry as any).coding_system || null,
+            issues: [`OpenAI API error: ${error.message}`],
+            recommendations: ['Please try again or check the code manually'],
+            explanation: `OpenAI API error: ${error.message}`,
+            compliance_notes: [],
+            originalData: entry
+          };
+        }
+      } else if (error instanceof OpenAI.APIConnectionError) {
         return {
           code,
-          status: 'invalid',
-          coding_system: entry.coding_system || null,
-          issues: ['OpenAI rate limit reached'],
-          recommendations: ['Please wait a few moments before trying again'],
-          explanation: 'OpenAI rate limit reached. Please wait a few moments before trying again.',
+          status: 'invalid' as const,
+          coding_system: (entry as any).coding_system || null,
+          issues: ['Unable to connect to OpenAI API'],
+          recommendations: ['Please check your internet connection and try again'],
+          explanation: 'Unable to connect to OpenAI API. Please check your internet connection.',
           compliance_notes: [],
           originalData: entry
         };
-      } else if (error.status === 401) {
+      } else if (error instanceof OpenAI.APITimeoutError) {
         return {
           code,
-          status: 'invalid',
-          coding_system: entry.coding_system || null,
-          issues: ['OpenAI API authentication failed'],
-          recommendations: ['Please check your API key configuration'],
-          explanation: 'OpenAI API authentication failed. Please check your API key configuration.',
-          compliance_notes: [],
-          originalData: entry
-        };
-      } else {
-        return {
-          code,
-          status: 'invalid',
-          coding_system: entry.coding_system || null,
-          issues: [`OpenAI API error: ${error.message}`],
-          recommendations: ['Please try again or check the code manually'],
-          explanation: `OpenAI API error: ${error.message}`,
+          status: 'invalid' as const,
+          coding_system: (entry as any).coding_system || null,
+          issues: ['OpenAI API request timed out'],
+          recommendations: ['Please try again'],
+          explanation: 'OpenAI API request timed out. Please try again.',
           compliance_notes: [],
           originalData: entry
         };
       }
-    } else if (error instanceof OpenAI.APIConnectionError) {
-      return {
-        code,
-        status: 'invalid',
-        coding_system: entry.coding_system || null,
-        issues: ['Unable to connect to OpenAI API'],
-        recommendations: ['Please check your internet connection and try again'],
-        explanation: 'Unable to connect to OpenAI API. Please check your internet connection.',
-        compliance_notes: [],
-        originalData: entry
-      };
-    } else if (error instanceof OpenAI.APITimeoutError) {
-      return {
-        code,
-        status: 'invalid',
-        coding_system: entry.coding_system || null,
-        issues: ['OpenAI API request timed out'],
-        recommendations: ['Please try again'],
-        explanation: 'OpenAI API request timed out. Please try again.',
-        compliance_notes: [],
-        originalData: entry
-      };
-    } 
 
-    // For any other unexpected errors
-    return {
-      code,
-      status: 'invalid',
-      coding_system: entry.coding_system || null,
-      issues: ['Validation failed due to an unexpected error'],
-      recommendations: ['Try validating again or check the code manually'],
-      explanation: error.message || 'An unexpected error occurred',
-      compliance_notes: [],
-      originalData: entry
-    };
+      // For any other unexpected errors
+      return {
+        code,
+        status: 'invalid' as const,
+        coding_system: (entry as any).coding_system || null,
+        issues: ['Validation failed due to an unexpected error'],
+        recommendations: ['Try validating again or check the code manually'],
+        explanation: error.message || 'An unexpected error occurred',
+        compliance_notes: [],
+        originalData: entry
+      };
+    });
   }
 
   try {
     const aiResponse = JSON.parse(result.data!.choices[0].message.content);
+    
+    if (!aiResponse.results || !Array.isArray(aiResponse.results)) {
+      throw new Error('Invalid response format: missing results array');
+    }
 
-    return {
-      code,
-      status: aiResponse.status,
-      coding_system: entry.coding_system || null,
-      issues: aiResponse.issues,
-      recommendations: aiResponse.recommendations,
-      explanation: aiResponse.explanation || '',
-      compliance_notes: aiResponse.compliance_notes || [],
-      duplicateOf: aiResponse.duplicateOf || undefined,
-      originalData: entry
-    };
+    return entries.map((entry, index) => {
+      const code = isDrug ? (entry as any).drug_code : isPolicy ? (entry as any).policy_id : (entry as any).medical_code || '';
+      const aiResult = aiResponse.results.find((r: any) => r.index === index) || aiResponse.results[index];
+      
+      if (!aiResult) {
+        return {
+          code,
+          status: 'invalid' as const,
+          coding_system: (entry as any).coding_system || null,
+          issues: ['No validation result returned for this entry'],
+          recommendations: ['Please try again or check the code manually'],
+          explanation: 'No validation result was returned for this entry.',
+          compliance_notes: [],
+          originalData: entry
+        };
+      }
+
+      return {
+        code,
+        status: aiResult.status,
+        coding_system: (entry as any).coding_system || null,
+        issues: aiResult.issues || [],
+        recommendations: aiResult.recommendations || [],
+        explanation: aiResult.explanation || '',
+        compliance_notes: aiResult.compliance_notes || [],
+        duplicateOf: aiResult.duplicateOf || undefined,
+        originalData: entry
+      };
+    });
   } catch (parseError) {
     console.error('Failed to parse OpenAI response:', parseError);
-    return {
-      code,
-      status: 'invalid',
-      coding_system: entry.coding_system || null,
-      issues: ['Failed to parse AI validation response'],
-      recommendations: ['Please try again or check the code manually'],
-      explanation: 'The AI validation service returned an invalid response format.',
-      compliance_notes: [],
-      originalData: entry
-    };
+    return entries.map((entry) => {
+      const code = isDrug ? (entry as any).drug_code : isPolicy ? (entry as any).policy_id : (entry as any).medical_code || '';
+      return {
+        code,
+        status: 'invalid' as const,
+        coding_system: (entry as any).coding_system || null,
+        issues: ['Failed to parse AI validation response'],
+        recommendations: ['Please try again or check the code manually'],
+        explanation: 'The AI validation service returned an invalid response format.',
+        compliance_notes: [],
+        originalData: entry
+      };
+    });
   }
 }
