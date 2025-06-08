@@ -4,6 +4,7 @@ import FileUploader from './components/FileUploader';
 import FileOverviewCard from './components/FileOverviewCard';
 import FileAnalysisCard from './components/FileAnalysisCard';
 import ValidationResults from './components/ValidationResults';
+import DataVisualization from './components/DataVisualization';
 import ChatWindow from './components/ChatWindow';
 import { parseFile } from './utils/fileParser';
 import { validateEntries } from './utils/validator';
@@ -133,11 +134,18 @@ function App() {
         )}
 
         {results.length > 0 && (
+          <>
+            <section className="mb-8">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Data Visualization & Insights</h2>
+              <DataVisualization results={results} fileAnalyses={fileAnalyses} />
+            </section>
+
           <ValidationResults
             results={results}
             rawText={results[0]?.originalData?.rawText}
             onExport={handleExport}
           />
+          </>
         )}
       </main>
 
