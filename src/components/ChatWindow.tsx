@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SendHorizontal } from 'lucide-react';
 import { ChatMessage, sendMessage } from '../services/chatService';
-import { ValidationResult } from '../types';
+import { ValidationResult, FileAnalysis } from '../types';
 
 interface ChatWindowProps {
   onClose: () => void;
   validationResults?: ValidationResult[];
+  fileAnalyses?: FileAnalysis[];
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ onClose, validationResults }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ onClose, validationResults, fileAnalyses }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +38,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose, validationResults }) =
     setMessages(newMessages);
 
     try {
-      const response = await sendMessage(userMessage, messages, validationResults);
+      const response = await sendMessage(userMessage, messages, validationResults, fileAnalyses);
       setMessages([
         ...newMessages,
         { role: 'assistant', content: response }
@@ -59,9 +60,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose, validationResults }) =
     <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-xl shadow-2xl flex flex-col transform transition-all duration-300 ease-in-out hover:translate-y-[-2px] z-50 overflow-hidden">
       <div className="p-4 border-b flex items-center justify-between bg-green-50 text-gray-800">
         <h3 className="font-medium text-blue-900">File Inspector Assistant</h3>
-        {validationResults && validationResults.length > 0 && (
+        {(validationResults?.length || fileAnalyses?.length) && (
           <span className="text-xs text-green-600">
-            Analyzing {validationResults.length} entries
+            {fileAnalyses?.length || 0} files • {validationResults?.length || 0} entries
           </span>
         )}
         <button

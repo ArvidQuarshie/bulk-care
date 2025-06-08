@@ -71,11 +71,30 @@ export interface DocumentValidationResult {
   recommendations: string[];
 }
 
+export interface FileAnalysis {
+  fileName: string;
+  fileType: 'CSV' | 'XLSX' | 'PDF' | 'DOCX' | 'Unknown';
+  fileSize: string;
+  headers: string[];
+  sampleData: Record<string, any>[];
+  contentSummary: string;
+  recommendedTeam: 'Claims' | 'Policy' | 'Medical Products' | 'Provider' | 'General';
+  confidence: number;
+  reasoning: string;
+  suggestedWorkflows: string[];
+  dataQuality: {
+    completeness: number;
+    consistency: number;
+    issues: string[];
+  };
+}
+
 export interface ParsedFile {
   headers: string[];
   data: (MedicalCode | DrugCode | Record<string, any>)[];
   fileType: FileType;
   rawText?: string;
+  analysis?: FileAnalysis;
 }
 
 export interface ValidationSummary {

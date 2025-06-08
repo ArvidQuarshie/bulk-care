@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import * as mammoth from 'mammoth';
 import { MedicalCode, ParsedFile, FileType } from '../types';
+import { analyzeFile } from '../services/fileAnalysisService';
 
 /**
  * Parse DOCX document
@@ -212,19 +213,37 @@ export const parseFile = (file: File): Promise<ParsedFile> => {
         }
         
         const fileExt = file.name.split('.').pop()?.toLowerCase();
+        let parsedFile: ParsedFile;
         
         if (fileExt === 'csv') {
           const content = event.target.result as string;
-          resolve(parseCSV(content));
+          parsedFile = parseCSV(content);
         } else if (['xlsx', 'xls'].includes(fileExt || '')) {
           const buffer = event.target.result as ArrayBuffer;
-          resolve(parseXLSX(buffer));
+          parsedFile = parseXLSX(buffer);
         } else if (fileExt === 'docx') {
           const buffer = event.target.result as ArrayBuffer; 
-          resolve(await parseDOCX(buffer));
+          parsedFile = await parseDOCX(buffer);
         } else {
           reject(new Error('Unsupported file format. Please upload CSV, XLSX, PDF, or DOCX files.'));
+          return;
         }
+        
+        // Add file analysis
+        try {
+          const analysis = await analyzeFile(
+            file,
+            parsedFile.headers,
+            parsedFile.data.slice(0, 10), // First 10 rows for analysis
+            parsedFile.rawText
+          );
+          parsedFile.analysis = analysis;
+        } catch (analysisError) {
+          console.error('File analysis failed:', analysisError);
+          // Continue without analysis if it fails
+        }
+        
+        resolve(parsedFile);
       } catch (error) {
         reject(error);
       }

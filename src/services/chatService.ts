@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { ValidationResult } from '../types';
+import { ValidationResult, FileAnalysis } from '../types';
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -10,7 +10,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   context?: {
-    type: 'validation_results';
+    type: 'validation_results' | 'file_analysis';
     data: ValidationResult[];
   };
 }
@@ -18,13 +18,14 @@ export interface ChatMessage {
 export async function sendMessage(
   message: string,
   history: ChatMessage[],
-  validationResults?: ValidationResult[]
+  validationResults?: ValidationResult[],
+  fileAnalyses?: FileAnalysis[]
 ): Promise<string> {
   try {
-    const systemPrompt = `You are an expert file analysis assistant. Help users understand file contents, data structures, and validation results. ${
-      validationResults 
-        ? 'Analyze the provided validation results and suggest improvements for data quality.' 
-        : 'Provide clear, concise answers about file contents and data structures.'
+    const systemPrompt = `You are an expert healthcare file analysis assistant. Help users understand file contents, data structures, validation results, and team triage recommendations. ${
+      validationResults?.length || fileAnalyses?.length
+        ? 'Use the provided file analysis and validation results to give informed recommendations.' 
+        : 'Provide clear, concise answers about healthcare data files and validation processes.'
     }`;
 
     const messages = [
@@ -36,6 +37,13 @@ export async function sendMessage(
       messages.push({
         role: "system",
         content: `Current validation results:\n${JSON.stringify(validationResults, null, 2)}`
+      });
+    }
+
+    if (fileAnalyses && fileAnalyses.length > 0) {
+      messages.push({
+        role: "system",
+        content: `File analysis results:\n${JSON.stringify(fileAnalyses, null, 2)}`
       });
     }
 

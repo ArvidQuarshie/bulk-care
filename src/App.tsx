@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { MessageCircle, FileSearch } from 'lucide-react';
 import FileUploader from './components/FileUploader';
+import FileAnalysisCard from './components/FileAnalysisCard';
 import ValidationResults from './components/ValidationResults';
 import ChatWindow from './components/ChatWindow';
 import { parseFile } from './utils/fileParser';
 import { validateEntries } from './utils/validator';
-import { MedicalCode, ValidationResult } from './types';
+import { MedicalCode, ValidationResult, FileAnalysis } from './types';
 import { exportToJson } from './services/exportService';
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ValidationResult[]>([]);
+  const [fileAnalyses, setFileAnalyses] = useState<FileAnalysis[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showChat, setShowChat] = useState(false);
 
@@ -21,17 +23,26 @@ function App() {
     try {
       
       const allResults: ValidationResult[] = [];
+      const allAnalyses: FileAnalysis[] = [];
       
       for (const file of files) {
         const { data } = await parseFile(file);
+        
+        // Add file analysis if available
+        if (data.analysis) {
+          allAnalyses.push(data.analysis);
+        }
+        
         const validationResults = await validateEntries(data, data.fileType);
         allResults.push(...validationResults);
       }
       
       setResults(allResults);
+      setFileAnalyses(allAnalyses);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
       setResults([]);
+      setFileAnalyses([]);
     } finally {
       setIsLoading(false);
     }
@@ -94,10 +105,20 @@ function App() {
           )}
         </section>
 
+        {fileAnalyses.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">File Analysis & Team Triage</h2>
+            {fileAnalyses.map((analysis, index) => (
+              <FileAnalysisCard key={index} analysis={analysis} />
+            ))}
+          </section>
+        )}
+
         {showChat && (
           <ChatWindow 
             onClose={() => setShowChat(false)} 
             validationResults={results}
+            fileAnalyses={fileAnalyses}
           />
         )}
 
