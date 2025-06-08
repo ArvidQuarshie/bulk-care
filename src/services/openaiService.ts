@@ -110,32 +110,72 @@ export async function validateWithAI(entry: MedicalCode | DrugCode | PolicyData)
   } catch (error) {
     console.error('OpenAI API error:', error);
 
-    // Handle critical API errors by throwing them
-    
-    if (error instanceof OpenAI.APIError) {
-      if (error.status === 429) {
-        throw new Error(
-          'OpenAI rate limit reached. Please wait a few moments before trying again. ' +
-          (error.message || '')
-        );
-      } else if (error.status === 401) {
-        throw new Error(
-          'OpenAI API authentication failed. Please check your API key configuration.'
-        );
-      } else {
-        throw new Error(`OpenAI API error: ${error.message}`);
-      }
-    } else if (error instanceof OpenAI.APIConnectionError) {
-      throw new Error(
-        'Unable to connect to OpenAI API. Please check your internet connection.'
-      );
-    } else if (error instanceof OpenAI.APITimeoutError) {
-      throw new Error('OpenAI API request timed out. Please try again.');
-    } 
-
-    // For non-critical errors, return a validation result with error details
+    // Get the code for the validation result
+    const isDrug = 'drug_code' in entry;
+    const isPolicy = 'policy_id' in entry;
     const code = isDrug ? entry.drug_code : isPolicy ? entry.policy_id : entry.medical_code || '';
     
+    // Return validation result with error details instead of throwing
+    if (error instanceof OpenAI.APIError) {
+      if (error.status === 429) {
+        return {
+          code,
+          status: 'invalid',
+          coding_system: entry.coding_system || null,
+          issues: ['OpenAI rate limit reached'],
+          recommendations: ['Please wait a few moments before trying again'],
+          explanation: 'OpenAI rate limit reached. Please wait a few moments before trying again.',
+          compliance_notes: [],
+          originalData: entry
+        };
+      } else if (error.status === 401) {
+        return {
+          code,
+          status: 'invalid',
+          coding_system: entry.coding_system || null,
+          issues: ['OpenAI API authentication failed'],
+          recommendations: ['Please check your API key configuration'],
+          explanation: 'OpenAI API authentication failed. Please check your API key configuration.',
+          compliance_notes: [],
+          originalData: entry
+        };
+      } else {
+        return {
+          code,
+          status: 'invalid',
+          coding_system: entry.coding_system || null,
+          issues: [`OpenAI API error: ${error.message}`],
+          recommendations: ['Please try again or check the code manually'],
+          explanation: `OpenAI API error: ${error.message}`,
+          compliance_notes: [],
+          originalData: entry
+        };
+      }
+    } else if (error instanceof OpenAI.APIConnectionError) {
+      return {
+        code,
+        status: 'invalid',
+        coding_system: entry.coding_system || null,
+        issues: ['Unable to connect to OpenAI API'],
+        recommendations: ['Please check your internet connection and try again'],
+        explanation: 'Unable to connect to OpenAI API. Please check your internet connection.',
+        compliance_notes: [],
+        originalData: entry
+      };
+    } else if (error instanceof OpenAI.APITimeoutError) {
+      return {
+        code,
+        status: 'invalid',
+        coding_system: entry.coding_system || null,
+        issues: ['OpenAI API request timed out'],
+        recommendations: ['Please try again'],
+        explanation: 'OpenAI API request timed out. Please try again.',
+        compliance_notes: [],
+        originalData: entry
+      };
+    } 
+
+    // For any other unexpected errors, return a validation result with error details
     return {
       code,
       status: 'invalid',
