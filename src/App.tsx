@@ -3,6 +3,7 @@ import { MessageCircle, FileSearch } from 'lucide-react';
 import FileUploader from './components/FileUploader';
 import FileOverviewCard from './components/FileOverviewCard';
 import FileAnalysisCard from './components/FileAnalysisCard';
+import TestDataLoader from './components/TestDataLoader';
 import ValidationResults from './components/ValidationResults';
 import DataVisualization from './components/DataVisualization';
 import ChatWindow from './components/ChatWindow';
@@ -99,6 +100,8 @@ function App() {
             onFileSelect={handleFileSelect}
             isLoading={isLoading}
           />
+          
+          <TestDataLoader onFileSelect={handleFileSelect} />
           
           {error && (
             <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg border-l-4 border-red-500 animate-pulse">
