@@ -128,6 +128,20 @@ const FileAnalysisCard: React.FC<FileAnalysisCardProps> = ({ analysis }) => {
               </div>
             </div>
           )}
+
+          {analysis.piiDetection.hasPII && (
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Security Recommendations</h4>
+              <ul className="text-xs text-blue-600 space-y-1">
+                {analysis.piiDetection.recommendations.slice(0, 3).map((rec, index) => (
+                  <li key={index} className="flex items-center space-x-1">
+                    <CheckCircle className="w-3 h-3" />
+                    <span>{rec}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
 
