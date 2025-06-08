@@ -87,6 +87,13 @@ export interface FileAnalysis {
     consistency: number;
     issues: string[];
   };
+  piiDetection: {
+    hasPII: boolean;
+    piiTypes: string[];
+    riskLevel: 'Low' | 'Medium' | 'High';
+    detectedFields: string[];
+    recommendations: string[];
+  };
 }
 
 export interface ParsedFile {

@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { FileAnalysis } from '../types';
+import { detectPII } from './piiDetectionService';
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -187,6 +188,7 @@ export async function analyzeFile(
   // Basic analysis
   const teamRecommendation = recommendTeam(content, headers);
   const dataQuality = assessDataQuality(sampleData, headers);
+  const piiDetection = detectPII(headers, sampleData, rawText);
 
   // AI-powered content analysis
   let contentSummary = '';
@@ -247,6 +249,7 @@ export async function analyzeFile(
     confidence: teamRecommendation.confidence,
     reasoning: teamRecommendation.reasoning,
     suggestedWorkflows,
-    dataQuality
+    dataQuality,
+    piiDetection
   };
 }

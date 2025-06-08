@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MessageCircle, FileSearch } from 'lucide-react';
 import FileUploader from './components/FileUploader';
+import FileOverviewCard from './components/FileOverviewCard';
 import FileAnalysisCard from './components/FileAnalysisCard';
 import ValidationResults from './components/ValidationResults';
 import ChatWindow from './components/ChatWindow';
@@ -107,9 +108,18 @@ function App() {
 
         {fileAnalyses.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">File Analysis & Team Triage</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">File Overview</h2>
             {fileAnalyses.map((analysis, index) => (
-              <FileAnalysisCard key={index} analysis={analysis} />
+              <FileOverviewCard key={index} analysis={analysis} />
+            ))}
+          </section>
+        )}
+
+        {fileAnalyses.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Detailed Analysis</h2>
+            {fileAnalyses.map((analysis, index) => (
+              <FileAnalysisCard key={`detail-${index}`} analysis={analysis} />
             ))}
           </section>
         )}
