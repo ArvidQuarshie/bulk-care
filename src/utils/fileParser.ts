@@ -42,9 +42,12 @@ const filePatterns: Record<FileType, ColumnPattern[]> = {
   ],
   clinician: [
     { name: 'clinician_id', patterns: [/clinician.*id/i, /doctor.*id/i], required: true },
-    { name: 'name', patterns: [/name/i, /doctor.*name/i], required: true },
-    { name: 'specialization', patterns: [/special/i, /expertise/i] },
-    { name: 'license_number', patterns: [/license/i, /registration/i] }
+    { name: 'first_name', patterns: [/first.*name/i], required: true },
+    { name: 'last_name', patterns: [/last.*name/i], required: true },
+    { name: 'title', patterns: [/title/i] },
+    { name: 'specialty', patterns: [/special/i, /expertise/i] },
+    { name: 'license_number', patterns: [/license/i, /registration/i] },
+    { name: 'image_url', patterns: [/image.*url/i, /photo/i, /picture/i] }
   ],
   provider: [
     { name: 'provider_id', patterns: [/provider.*id/i, /facility.*id/i], required: true },
@@ -81,6 +84,12 @@ const normalizeHeader = (header: string, fileType: FileType): string => {
  */
 const detectFileType = (headers: string[]): FileType => {
   const headerSet = new Set(headers.map(h => h.toLowerCase().trim()));
+  
+  // Check for clinician-specific patterns first
+  if (headerSet.has('first_name') && headerSet.has('last_name') && 
+      (headerSet.has('specialty') || headerSet.has('license_number') || headerSet.has('npi'))) {
+    return 'clinician';
+  }
   
   for (const [type, patterns] of Object.entries(filePatterns)) {
     // Count matching required patterns
@@ -144,7 +153,7 @@ const parseCSV = (content: string): ParsedFile => {
         let value = values[index]?.trim() || null;
         
         // Convert numeric fields
-        if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength'].includes(header)) {
+        if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength', 'years_experience'].includes(header)) {
           value = parseFloat(value);
         } else if (value && ['start_date', 'end_date', 'valid_from', 'valid_to'].includes(header)) {
           value = new Date(value).toISOString();
@@ -177,6 +186,8 @@ const parseXLSX = (buffer: ArrayBuffer): ParsedFile => {
       ? { drug_code: '' } 
       : fileType === 'policy'
       ? { policy_id: '' }
+      : fileType === 'clinician'
+      ? { clinician_id: '' }
       : { medical_code: '' };
     
     originalHeaders.forEach((header, index) => {
@@ -184,7 +195,7 @@ const parseXLSX = (buffer: ArrayBuffer): ParsedFile => {
       let value = row[header] || null;
       
       // Convert numeric fields
-      if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength'].includes(normalizedHeader)) {
+      if (value && ['price', 'ucr_benchmark', 'coverage_limit', 'strength', 'years_experience'].includes(normalizedHeader)) {
         value = parseFloat(value);
       } else if (value && ['start_date', 'end_date', 'valid_from', 'valid_to'].includes(normalizedHeader)) {
         value = new Date(value).toISOString();

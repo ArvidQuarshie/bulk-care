@@ -40,6 +40,26 @@ export interface DrugCode {
   remarks?: string;
 }
 
+export interface ClinicianData {
+  clinician_id: string;
+  first_name: string;
+  last_name: string;
+  title: string;
+  specialty: string;
+  subspecialty?: string;
+  license_number: string;
+  npi: string;
+  dea_number?: string;
+  board_certification: string;
+  medical_school: string;
+  residency_program: string;
+  fellowship?: string;
+  years_experience: number;
+  employment_status: string;
+  department: string;
+  image_url?: string;
+}
+
 export interface ValidationResult {
   code: string;
   status: 'valid' | 'warning' | 'invalid';
@@ -48,7 +68,7 @@ export interface ValidationResult {
   recommendations: string[];
   explanation: string;
   compliance_notes: string[];
-  originalData: MedicalCode | DrugCode;
+  originalData: MedicalCode | DrugCode | ClinicianData;
   duplicateOf?: string;
 }
 
@@ -98,7 +118,7 @@ export interface FileAnalysis {
 
 export interface ParsedFile {
   headers: string[];
-  data: (MedicalCode | DrugCode | Record<string, any>)[];
+  data: (MedicalCode | DrugCode | ClinicianData | Record<string, any>)[];
   fileType: FileType;
   rawText?: string;
   analysis?: FileAnalysis;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ValidationResult } from '../types';
 import { CheckCircle, AlertTriangle, XCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import ClinicianCard from './ClinicianCard';
 
 interface ValidationItemProps {
   result: ValidationResult;
@@ -8,7 +9,10 @@ interface ValidationItemProps {
 
 const ValidationItem: React.FC<ValidationItemProps> = ({ result }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showClinicianDetails, setShowClinicianDetails] = useState(false);
+  
   const isPolicy = 'policy_name' in result.originalData;
+  const isClinician = 'first_name' in result.originalData && 'last_name' in result.originalData;
 
   const getStatusIcon = () => {
     switch (result.status) {
@@ -43,6 +47,17 @@ const ValidationItem: React.FC<ValidationItemProps> = ({ result }) => {
     }
   };
 
+  const getDisplayName = () => {
+    if (isClinician) {
+      const clinician = result.originalData as any;
+      return `${clinician.title || ''} ${clinician.first_name} ${clinician.last_name}`.trim();
+    }
+    if (isPolicy) {
+      return (result.originalData as any).policy_name;
+    }
+    return result.code;
+  };
+
   return (
     <div className="mb-4 border rounded-lg overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md">
       <div 
@@ -52,17 +67,20 @@ const ValidationItem: React.FC<ValidationItemProps> = ({ result }) => {
         <div className="flex items-center space-x-3">
           {getStatusIcon()}
           <span className="font-medium">{result.code}</span>
-          {isPolicy && (
-            <span className="text-sm text-gray-600">
-              {(result.originalData as any).policy_name}
-            </span>
-          )}
+          <span className="text-sm text-gray-600">
+            {getDisplayName()}
+          </span>
           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor()}`}>
             {getStatusText()}
           </span>
-          {!isPolicy && result.coding_system && (
+          {!isPolicy && !isClinician && result.coding_system && (
             <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
               {result.coding_system}
+            </span>
+          )}
+          {isClinician && (
+            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+              Clinician Profile
             </span>
           )}
         </div>
@@ -77,16 +95,32 @@ const ValidationItem: React.FC<ValidationItemProps> = ({ result }) => {
 
       {isExpanded && (
         <div className="p-4 border-t bg-gray-50">
+          {/* Clinician Card for clinician data */}
+          {isClinician && (
+            <div className="mb-6">
+              <ClinicianCard 
+                clinician={result.originalData as any}
+                isExpanded={showClinicianDetails}
+                onToggle={() => setShowClinicianDetails(!showClinicianDetails)}
+              />
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-2">Original Data</h3>
               <div className="bg-white p-3 rounded border mb-4">
-                {Object.entries(result.originalData).map(([key, value]) => (
-                  <div key={key} className="mb-1 text-sm">
-                    <span className="font-medium">{key.replace(/_/g, ' ')}:</span>{' '}
-                    {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || 'N/A'}
-                  </div>
-                ))}
+                {Object.entries(result.originalData).map(([key, value]) => {
+                  // Skip image_url in the original data display to avoid clutter
+                  if (key === 'image_url') return null;
+                  
+                  return (
+                    <div key={key} className="mb-1 text-sm">
+                      <span className="font-medium">{key.replace(/_/g, ' ')}:</span>{' '}
+                      {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value || 'N/A'}
+                    </div>
+                  );
+                })}
               </div>
               {result.duplicateOf && (
                 <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded text-sm text-orange-800">
