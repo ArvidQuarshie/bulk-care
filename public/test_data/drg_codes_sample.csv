@@ -1,0 +1,21 @@
+drg_code,drg_description,mdc,type,geometric_mean_los,arithmetic_mean_los,relative_weight,national_payment_rate,outlier_threshold
+001,Heart transplant or implant of heart assist system with MCC,05,Surgical,22.1,29.8,26.1408,201250.00,44
+002,Heart transplant or implant of heart assist system without MCC,05,Surgical,13.2,16.4,16.5525,127450.00,26
+003,ECMO or tracheostomy with MV 96+ hours or PDX except face mouth and neck with major OR,05,Surgical,18.7,25.9,18.4031,141650.00,37
+004,Tracheostomy with MV 96+ hours or PDX except face mouth and neck without major OR,05,Surgical,12.8,17.2,10.1817,78400.00,26
+005,Liver transplant with MCC or intestinal transplant,07,Surgical,15.4,21.7,11.5234,88750.00,31
+006,Liver transplant without MCC,07,Surgical,8.9,11.2,5.4321,41850.00,18
+007,Lung transplant,04,Surgical,17.2,23.8,15.2341,117350.00,34
+008,Simultaneous pancreas/kidney transplant,11,Surgical,12.1,16.3,7.8945,60800.00,24
+009,Bone marrow transplant,17,Surgical,25.6,34.2,22.3456,172100.00,51
+010,Pancreas transplant,11,Surgical,9.8,13.1,6.2134,47850.00,20
+020,Intracranial vascular procedures with PDX hemorrhage with MCC,01,Surgical,8.7,12.4,7.1234,54850.00,17
+021,Intracranial vascular procedures with PDX hemorrhage with CC,01,Surgical,5.2,7.1,4.2345,32600.00,10
+022,Intracranial vascular procedures with PDX hemorrhage without CC/MCC,01,Surgical,3.1,4.2,2.8765,22150.00,6
+023,Craniotomy with major device implant or acute complex CNS PDX with MCC,01,Surgical,9.8,14.2,8.5432,65800.00,20
+024,Craniotomy with major device implant or acute complex CNS PDX with CC,01,Surgical,6.1,8.3,5.1234,39450.00,12
+025,Craniotomy with major device implant or acute complex CNS PDX without CC/MCC,01,Surgical,3.8,5.1,3.2156,24750.00,8
+039,Extracranial procedures with MCC,01,Surgical,7.2,10.1,4.8765,37550.00,14
+040,Extracranial procedures with CC or major device,01,Surgical,3.9,5.4,2.9876,23000.00,8
+041,Extracranial procedures without CC/MCC,01,Surgical,2.1,2.8,1.8234,14050.00,4
+042,Peripheral/cranial nerve and other nervous system procedures with MCC,01,Surgical,8.1,11.7,5.6789,43750.00,16

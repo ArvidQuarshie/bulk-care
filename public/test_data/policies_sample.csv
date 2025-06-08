@@ -1,0 +1,16 @@
+policy_id,policy_name,payer_id,policy_type,start_date,end_date,currency,coverage_limit,status,description,premium_amount,deductible,copay_primary,copay_specialist
+POL001,Health Basic Plus,PAY001,Individual,2024-01-01,2024-12-31,USD,75000,Active,Comprehensive outpatient and emergency coverage,450.00,1500,25,50
+POL002,Family Care Premium,PAY002,Family,2024-02-01,2025-01-31,USD,200000,Active,Full family coverage including maternity and pediatric,1200.00,2500,30,60
+POL003,Chronic Disease Management,PAY003,Individual,2024-03-01,2025-02-28,USD,100000,Active,Specialized coverage for chronic conditions,650.00,1000,20,40
+POL004,Senior Advantage Plan,PAY004,Individual,2024-01-15,2024-12-14,USD,80000,Active,Medicare supplement for individuals 65+,380.00,800,15,35
+POL005,Corporate Bronze Tier,PAY005,Corporate,2024-04-01,2025-03-31,USD,300000,Active,Entry-level corporate health benefits,2500.00,3000,35,70
+POL006,Corporate Platinum Elite,PAY005,Corporate,2024-04-01,2025-03-31,USD,1000000,Active,Executive-level comprehensive coverage,8500.00,500,10,20
+POL007,Maternity & Newborn Care,PAY006,Family,2024-05-01,2025-04-30,USD,150000,Active,Specialized maternity and pediatric coverage,950.00,2000,25,50
+POL008,Pediatric Essential Care,PAY007,Child,2024-06-01,2025-05-31,USD,50000,Active,Comprehensive children's health coverage,280.00,500,20,40
+POL009,International Travel Health,PAY008,Individual,2024-07-01,2024-12-31,USD,25000,Active,Emergency medical coverage for international travel,150.00,250,50,100
+POL010,Executive Comprehensive,PAY009,Individual,2024-01-01,2024-12-31,USD,2000000,Active,Unlimited coverage with concierge services,1500.00,0,0,0
+POL011,Student Health Plan,PAY010,Individual,2024-08-01,2025-07-31,USD,30000,Active,Affordable coverage for college students,180.00,1000,30,60
+POL012,Retiree Health Bridge,PAY011,Individual,2024-09-01,2025-08-31,USD,60000,Pending,Bridge coverage for early retirees,420.00,1200,25,50
+POL013,Small Business Group,PAY012,Corporate,2024-10-01,2025-09-30,USD,150000,Active,Affordable group coverage for small businesses,3200.00,2000,30,60
+POL014,Mental Health Focus,PAY013,Individual,2024-11-01,2025-10-31,USD,40000,Active,Enhanced mental health and wellness coverage,320.00,800,15,30
+POL015,Catastrophic Protection,PAY014,Individual,2024-12-01,2025-11-30,USD,500000,Active,High-deductible plan for major medical events,220.00,5000,0,0

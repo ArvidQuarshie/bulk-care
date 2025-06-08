@@ -1,0 +1,21 @@
+medical_code,description,coding_system,category,billable,effective_date,status,relative_value_units,medicare_fee
+99213,Office visit established patient moderate complexity,CPT,Evaluation and Management,Yes,2024-01-01,Active,1.42,109.00
+99214,Office visit established patient high complexity,CPT,Evaluation and Management,Yes,2024-01-01,Active,2.11,162.00
+I10,Essential hypertension,ICD-10-CM,Cardiovascular,Yes,2024-01-01,Active,0.00,0.00
+E11.9,Type 2 diabetes mellitus without complications,ICD-10-CM,Endocrine,Yes,2024-01-01,Active,0.00,0.00
+Z00.00,Encounter for general adult medical examination without abnormal findings,ICD-10-CM,Factors influencing health status,Yes,2024-01-01,Active,0.00,0.00
+J44.1,Chronic obstructive pulmonary disease with acute exacerbation,ICD-10-CM,Respiratory,Yes,2024-01-01,Active,0.00,0.00
+94010,Spirometry including graphic record,CPT,Pulmonary Function,Yes,2024-01-01,Active,0.79,61.00
+97110,Therapeutic procedure 1 or more areas each 15 minutes,CPT,Physical Therapy,Yes,2024-01-01,Active,0.71,55.00
+90834,Psychotherapy 45 minutes,CPT,Mental Health,Yes,2024-01-01,Active,1.86,143.00
+43239,Esophagogastroduodenoscopy with biopsy,CPT,Gastroenterology,Yes,2024-01-01,Active,3.15,242.00
+77067,Screening mammography bilateral,CPT,Radiology,Yes,2024-01-01,Active,1.87,144.00
+27245,Treatment of intertrochanteric femoral fracture,CPT,Orthopedic Surgery,Yes,2024-01-01,Active,22.75,1750.00
+59400,Routine obstetric care including delivery,CPT,Obstetrics,Yes,2024-01-01,Active,58.8,4520.00
+66984,Extracapsular cataract removal with lens insertion,CPT,Ophthalmology,Yes,2024-01-01,Active,15.2,1170.00
+70553,MRI brain without and with contrast,CPT,Radiology,Yes,2024-01-01,Active,7.35,565.00
+191,Malignant neoplasm of brain,DRG,Neurological,Yes,2024-01-01,Active,0.00,8500.00
+292,Heart failure and shock with CC,DRG,Cardiovascular,Yes,2024-01-01,Active,0.00,6200.00
+470,Major joint replacement of lower extremity,DRG,Orthopedic,Yes,2024-01-01,Active,0.00,15800.00
+775,Vaginal delivery without complications,DRG,Obstetrics,Yes,2024-01-01,Active,0.00,4200.00
+194,Simple pneumonia and pleurisy with CC,DRG,Respiratory,Yes,2024-01-01,Active,0.00,5100.00

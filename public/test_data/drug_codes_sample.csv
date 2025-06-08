@@ -1,0 +1,21 @@
+drug_code,drug_name,coding_system,drug_type,strength,unit,package_size,uom,price,currency,branded_generic,chronic_indicator,atc_code,ucr_benchmark,valid_from,valid_to,manufacturer,ndc_number
+DRG001,Metformin HCl,NDC,Oral Tablet,500,mg,100,tablets,25.50,USD,Generic,Y,A10BA02,30.60,2024-01-01,2024-12-31,Teva Pharmaceuticals,00093-1074-01
+DRG002,Lisinopril,NDC,Oral Tablet,10,mg,90,tablets,18.75,USD,Generic,Y,C09AA03,22.50,2024-01-01,2024-12-31,Lupin Pharmaceuticals,68180-0512-09
+DRG003,Atorvastatin Calcium,NDC,Oral Tablet,20,mg,30,tablets,32.40,USD,Generic,Y,C10AA05,38.88,2024-01-01,2024-12-31,Ranbaxy Pharmaceuticals,63304-0822-30
+DRG004,Amlodipine Besylate,NDC,Oral Tablet,5,mg,30,tablets,12.80,USD,Generic,Y,C08CA01,15.36,2024-01-01,2024-12-31,Mylan Pharmaceuticals,00378-0025-05
+DRG005,Omeprazole,NDC,Delayed Release Capsule,20,mg,30,capsules,28.90,USD,Generic,Y,A02BC01,34.68,2024-01-01,2024-12-31,Sandoz Inc,00781-1506-31
+DRG006,Levothyroxine Sodium,NDC,Oral Tablet,50,mcg,90,tablets,22.15,USD,Generic,Y,H03AA01,26.58,2024-01-01,2024-12-31,Mylan Pharmaceuticals,00378-1805-91
+DRG007,Gabapentin,NDC,Oral Capsule,300,mg,90,capsules,35.60,USD,Generic,Y,N03AX12,42.72,2024-01-01,2024-12-31,Amneal Pharmaceuticals,65162-0428-09
+DRG008,Sertraline HCl,NDC,Oral Tablet,50,mg,30,tablets,24.30,USD,Generic,Y,N06AB06,29.16,2024-01-01,2024-12-31,Greenstone LLC,59762-0100-03
+DRG009,Albuterol Sulfate,NDC,Inhalation Aerosol,90,mcg,200,doses,45.80,USD,Generic,Y,R03AC02,54.96,2024-01-01,2024-12-31,Teva Pharmaceuticals,00093-0058-56
+DRG010,Insulin Glargine,NDC,Injection,100,units/mL,10,mL,285.40,USD,Branded,Y,A10AE04,342.48,2024-01-01,2024-12-31,Sanofi-Aventis,00088-2220-33
+DRG011,Hydrochlorothiazide,NDC,Oral Tablet,25,mg,30,tablets,8.95,USD,Generic,Y,C03AA03,10.74,2024-01-01,2024-12-31,Heritage Pharmaceuticals,23155-0074-01
+DRG012,Pantoprazole Sodium,NDC,Delayed Release Tablet,40,mg,90,tablets,42.70,USD,Generic,Y,A02BC02,51.24,2024-01-01,2024-12-31,Dr. Reddy's Laboratories,43598-0431-90
+DRG013,Losartan Potassium,NDC,Oral Tablet,50,mg,30,tablets,19.85,USD,Generic,Y,C09CA01,23.82,2024-01-01,2024-12-31,Torrent Pharmaceuticals,13668-0015-30
+DRG014,Montelukast Sodium,NDC,Oral Tablet,10,mg,30,tablets,38.50,USD,Generic,Y,R03DC03,46.20,2024-01-01,2024-12-31,Teva Pharmaceuticals,00093-7355-56
+DRG015,Escitalopram Oxalate,NDC,Oral Tablet,10,mg,30,tablets,26.75,USD,Generic,Y,N06AB10,32.10,2024-01-01,2024-12-31,Aurobindo Pharma,65862-0842-30
+DRG016,Prednisone,NDC,Oral Tablet,20,mg,21,tablets,15.60,USD,Generic,N,H02AB07,18.72,2024-01-01,2024-12-31,West-Ward Pharmaceuticals,00143-9726-21
+DRG017,Furosemide,NDC,Oral Tablet,40,mg,30,tablets,11.40,USD,Generic,Y,C03CA01,13.68,2024-01-01,2024-12-31,Mylan Pharmaceuticals,00378-0013-01
+DRG018,Tramadol HCl,NDC,Oral Tablet,50,mg,30,tablets,21.90,USD,Generic,N,N02AX02,26.28,2024-01-01,2024-12-31,Amneal Pharmaceuticals,65162-0428-30
+DRG019,Warfarin Sodium,NDC,Oral Tablet,5,mg,30,tablets,16.25,USD,Generic,Y,B01AA03,19.50,2024-01-01,2024-12-31,Taro Pharmaceuticals,51672-4067-02
+DRG020,Clopidogrel Bisulfate,NDC,Oral Tablet,75,mg,30,tablets,48.90,USD,Generic,Y,B01AC04,58.68,2024-01-01,2024-12-31,Apotex Corp,60505-0187-03

@@ -1,0 +1,16 @@
+provider_id,provider_name,npi,license_number,specialty,facility_type,address,city,state,zip_code,phone,email,network_status,credentialing_date,expiration_date
+PRV001,Dr. Sarah Johnson MD,1234567890,MD12345,Internal Medicine,Clinic,123 Medical Plaza Dr,Springfield,IL,62701,(217) 555-0101,sjohnson@healthcenter.com,In-Network,2023-01-15,2025-01-15
+PRV002,Metropolitan General Hospital,2345678901,HOSP001,Multi-Specialty,Hospital,456 Hospital Ave,Chicago,IL,60601,(312) 555-0201,admin@metrohealth.org,In-Network,2023-02-01,2025-02-01
+PRV003,Dr. Michael Chen MD,3456789012,MD23456,Orthopedic Surgery,Clinic,789 Bone & Joint Blvd,Peoria,IL,61602,(309) 555-0301,mchen@orthocenter.com,In-Network,2023-03-10,2025-03-10
+PRV004,Riverside Physical Therapy,4567890123,PT001,Physical Therapy,Outpatient Facility,321 Rehab Way,Rockford,IL,61101,(815) 555-0401,info@riversidept.com,In-Network,2023-04-05,2025-04-05
+PRV005,Dr. Lisa Rodriguez PhD,5678901234,PSY001,Clinical Psychology,Mental Health Clinic,654 Wellness Center Dr,Naperville,IL,60540,(630) 555-0501,lrodriguez@mindhealth.com,In-Network,2023-05-20,2025-05-20
+PRV006,Sunshine Dialysis Center,6789012345,DIAL001,Nephrology,Dialysis Center,987 Kidney Care Ln,Aurora,IL,60502,(630) 555-0601,contact@sunshinedialysis.com,In-Network,2023-06-15,2025-06-15
+PRV007,Advanced Imaging Associates,7890123456,RAD001,Radiology,Imaging Center,147 Scan Street,Joliet,IL,60431,(815) 555-0701,scheduling@advancedimaging.com,In-Network,2023-07-01,2025-07-01
+PRV008,Women's Health Specialists,8901234567,OB001,Obstetrics & Gynecology,Specialty Clinic,258 Maternal Care Ave,Elgin,IL,60120,(847) 555-0801,appointments@womenshealth.com,In-Network,2023-08-12,2025-08-12
+PRV009,Clear Vision Eye Center,9012345678,OPH001,Ophthalmology,Eye Care Center,369 Vision Blvd,Schaumburg,IL,60173,(847) 555-0901,info@clearvisioneye.com,In-Network,2023-09-05,2025-09-05
+PRV010,Midwest Neurology Group,0123456789,NEUR001,Neurology,Specialty Clinic,741 Brain Health Dr,Evanston,IL,60201,(847) 555-1001,referrals@midwestneuro.com,In-Network,2023-10-18,2025-10-18
+PRV011,Wound Care Specialists,1234567891,WND001,Wound Care,Specialty Clinic,852 Healing Way,Waukegan,IL,60085,(847) 555-1101,intake@woundcarespec.com,In-Network,2023-11-22,2025-11-22
+PRV012,Dr. Robert Kim MD,2345678902,MD34567,Cardiology,Clinic,963 Heart Health Pkwy,Oak Park,IL,60301,(708) 555-1201,rkim@heartcenter.com,In-Network,2023-12-08,2025-12-08
+PRV013,Pediatric Care Associates,3456789013,PED001,Pediatrics,Pediatric Clinic,159 Children's Way,Wheaton,IL,60187,(630) 555-1301,appointments@pedcare.com,In-Network,2024-01-14,2026-01-14
+PRV014,Emergency Medical Services,4567890124,EMS001,Emergency Medicine,Emergency Department,753 Emergency Blvd,Champaign,IL,61820,(217) 555-1401,emergency@emscare.org,In-Network,2024-02-28,2026-02-28
+PRV015,Geriatric Medicine Center,5678901235,GER001,Geriatrics,Senior Care Facility,486 Elder Care Dr,Bloomington,IL,61701,(309) 555-1501,info@geriatricmed.com,In-Network,2024-03-15,2026-03-15
